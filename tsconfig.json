@@ -22,6 +22,7 @@
     "paths": {
       "@views/*": ["views/*"],
       "@components/*": ["components/*"],
+      "@services/*": ["services/*"],
     }
   },
   "include": [
