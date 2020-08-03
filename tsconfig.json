@@ -20,7 +20,8 @@
     "jsx": "react",
     "baseUrl": "./src",
     "paths": {
-      "@views/*": ["views/"]
+      "@views/*": ["views/"],
+      "@components/*": ["components/"],
     }
   },
   "include": [
