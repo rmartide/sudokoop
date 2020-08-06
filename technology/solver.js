@@ -1,85 +1,73 @@
 import { sudoku1 } from "./sudokus.js";
-
-console.log(sudoku1);
-
-const convertedSudoku1 = convertSudoku(sudoku1);
-
-solve(convertedSudoku1);
-
+let solved = false;
+solve(sudoku1);
+console.log("FIN");
 function solve(oldSudoku) {
 	const sudoku = spreadSudoku(oldSudoku);
-	if (isSolution(sudoku)) {
-		console.log(sudoku);
-	} else {
-		for (let i = 0; i < sudoku[i].length; i++) {
-			const row = sudoku[i];
-			for (let j = 0; j < row.length; j++) {
-				const pos = row[j];
-				if (pos.value === 0) {
-					for (let z = 1; z <= 9; z++) {
-						if (!alreadyInArray(z, pos.row) && !alreadyInArray(z, pos.column) && !alreadyInArray(z, pos.block)) {
-							pos.value = z;
-							solve(sudoku);
+	/* 	const zeroes = printNumberOfZeroes(sudoku);
+	if(zeroes < 10) {
+		console.log(zeroes)
+	} */
+	if (!solved) {
+		if (isSolution(sudoku)) {
+			printSolution(sudoku);
+			solved = true;
+		} else {
+			for (let i = 0; i < 9; i++) {
+				const row = sudoku[i];
+				for (let j = 0; j < 9; j++) {
+					const value = row[j];
+					if (value === 0) {
+						for (let z = 1; z <= 9; z++) {
+							if (
+								!alreadyInArray(z, getRow(i, sudoku)) &&
+								!alreadyInArray(z, getColumn(j, sudoku)) &&
+								!alreadyInArray(z, getBlock(i, j, sudoku))
+							) {
+								// console.log('--------------------------');
+								// console.log(i,j,z);
+								// console.log(row);
+								row[j] = z;
+								// console.log(row);
+								// console.log('--------------------------');
+
+								solve(sudoku);
+							}
 						}
+					}
+					if (row[j] === 0) {
+						return;
 					}
 				}
 			}
-		}
-		console.log('nop');
-	}
-}
-
-function convertSudoku(sudoku) {
-	for (let i = 0; i < sudoku[i].length; i++) {
-		const row = sudoku[i];
-		for (let j = 0; j < row.length; j++) {
-			const value = row[j];
-			row[j] = {
-				value,
-				i,
-				j
-			};
-		}
-	}
-	for (let i = 0; i < sudoku[i].length; i++) {
-		const row = sudoku[i];
-		for (let j = 0; j < row.length; j++) {
-			const pos = row[j];
-			pos.row = getRow(pos, sudoku);
-			pos.column = getColumn(pos, sudoku);
-			pos.block = getBlock(pos, sudoku);
+			printSolution(sudoku);
 		}
 	}
 }
 
 function spreadSudoku(sudoku) {
 	const newSudoku = [];
-	for (let i = 0; i < sudoku[i].length; i++) {
-		const newRow = [];
+	for (let i = 0; i < 9; i++) {
 		const row = sudoku[i];
-		for (let j = 0; j < row.length; j++) {
-			const pos = row[j];
-			newRow.push({ ...pos });
-		}
-		newSudoku.push(newRow);
+		newSudoku.push([...row]);
 	}
 	return newSudoku;
 }
 
-function getRow({ i }, sudoku) {
-	return sudoku[i];
+function getRow(i, sudoku) {
+	return [...sudoku[i]];
 }
 
-function getColumn({ j }, sudoku) {
+function getColumn(j, sudoku) {
 	return sudoku.map((row) => row[j]);
 }
 
-function getBlock({ i, j }, sudoku) {
+function getBlock(i, j, sudoku) {
 	const { i: blocki, j: blockj } = getBlockCoordinates(i, j);
 	const block = [];
 	for (let x = blocki; x < blocki + 3; x++) {
 		for (let y = blockj; y < blockj + 3; y++) {
-			block.push(sudoku[i][j]);
+			block.push(sudoku[x][y]);
 		}
 	}
 	return block;
@@ -96,16 +84,45 @@ function getBlockCoordinates(i, j) {
 }
 
 function alreadyInArray(value, array) {
-	return array.findIndex(pos => pos.value === value) !== -1;
+	const found =
+		array.findIndex((pos) => {
+			return pos === value;
+		}) !== -1;
+	return found;
 }
 
 function isSolution(sudoku) {
-	for (let i = 0; i < sudoku[i].length; i++) {
+	for (let i = 0; i < 9; i++) {
 		const row = sudoku[i];
-		for (let j = 0; j < row.length; j++) {
+		for (let j = 0; j < 9; j++) {
 			const pos = row[j];
-			if (pos.value === 0) return false;
+			if (pos === 0) {
+				return false;
+			}
 		}
 	}
 	return true;
+}
+
+function printSolution(sudoku) {
+	console.log("---------------------");
+	for (let i = 0; i < 9; i++) {
+		const row = sudoku[i];
+		console.log(row);
+	}
+	console.log("---------------------");
+}
+
+function printNumberOfZeroes(sudoku) {
+	let zeroes = 0;
+	for (let i = 0; i < 9; i++) {
+		const row = sudoku[i];
+		for (let j = 0; j < 9; j++) {
+			const pos = row[j];
+			if (pos === 0) {
+				zeroes++;
+			}
+		}
+	}
+	return zeroes;
 }
