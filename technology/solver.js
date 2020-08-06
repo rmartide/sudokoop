@@ -1,46 +1,34 @@
 import { sudoku1 } from "./sudokus.js";
-let solved = false;
+console.time("Sudoku1");
 solve(sudoku1);
-console.log("FIN");
+console.timeEnd("Sudoku1");
+
 function solve(oldSudoku) {
 	const sudoku = spreadSudoku(oldSudoku);
-	/* 	const zeroes = printNumberOfZeroes(sudoku);
-	if(zeroes < 10) {
-		console.log(zeroes)
-	} */
-	if (!solved) {
-		if (isSolution(sudoku)) {
-			printSolution(sudoku);
-			solved = true;
-		} else {
-			for (let i = 0; i < 9; i++) {
-				const row = sudoku[i];
-				for (let j = 0; j < 9; j++) {
-					const value = row[j];
-					if (value === 0) {
-						for (let z = 1; z <= 9; z++) {
-							if (
-								!alreadyInArray(z, getRow(i, sudoku)) &&
-								!alreadyInArray(z, getColumn(j, sudoku)) &&
-								!alreadyInArray(z, getBlock(i, j, sudoku))
-							) {
-								// console.log('--------------------------');
-								// console.log(i,j,z);
-								// console.log(row);
-								row[j] = z;
-								// console.log(row);
-								// console.log('--------------------------');
-
-								solve(sudoku);
-							}
+	if (isSolution(sudoku)) {
+		printSolution(sudoku);
+	} else {
+		for (let i = 0; i < 9; i++) {
+			const row = sudoku[i];
+			for (let j = 0; j < 9; j++) {
+				const value = row[j];
+				if (value === 0) {
+					for (let z = 1; z <= 9; z++) {
+						if (
+							!alreadyInArray(z, getRow(i, sudoku)) &&
+							!alreadyInArray(z, getColumn(j, sudoku)) &&
+							!alreadyInArray(z, getBlock(i, j, sudoku))
+						) {
+							sudoku[i] = [...row];
+							sudoku[i][j] = z;
+							solve(sudoku);
 						}
 					}
-					if (row[j] === 0) {
-						return;
-					}
+				}
+				if (row[j] === 0) {
+					return;
 				}
 			}
-			printSolution(sudoku);
 		}
 	}
 }
@@ -111,18 +99,4 @@ function printSolution(sudoku) {
 		console.log(row);
 	}
 	console.log("---------------------");
-}
-
-function printNumberOfZeroes(sudoku) {
-	let zeroes = 0;
-	for (let i = 0; i < 9; i++) {
-		const row = sudoku[i];
-		for (let j = 0; j < 9; j++) {
-			const pos = row[j];
-			if (pos === 0) {
-				zeroes++;
-			}
-		}
-	}
-	return zeroes;
 }
