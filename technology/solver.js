@@ -17,7 +17,7 @@ function solve(oldSudoku) {
 				const pos = row[j];
 				if (pos.value === 0) {
 					for (let z = 1; z <= 9; z++) {
-						if (!alreadyInRow(z, pos) && !alreadyInColumn(z, pos) && !alreadyInBlock(z, pos)) {
+						if (!alreadyInArray(z, pos.row) && !alreadyInArray(z, pos.column) && !alreadyInArray(z, pos.block)) {
 							pos.value = z;
 							solve(sudoku);
 						}
@@ -25,8 +25,9 @@ function solve(oldSudoku) {
 				}
 			}
 		}
+		console.log('nop');
 	}
-};
+}
 
 function convertSudoku(sudoku) {
 	for (let i = 0; i < sudoku[i].length; i++) {
@@ -44,11 +45,14 @@ function convertSudoku(sudoku) {
 		const row = sudoku[i];
 		for (let j = 0; j < row.length; j++) {
 			const pos = row[j];
+			pos.row = getRow(pos, sudoku);
+			pos.column = getColumn(pos, sudoku);
+			pos.block = getBlock(pos, sudoku);
 		}
 	}
-};
+}
 
-const spreadSudoku = (sudoku) => {
+function spreadSudoku(sudoku) {
 	const newSudoku = [];
 	for (let i = 0; i < sudoku[i].length; i++) {
 		const newRow = [];
@@ -60,21 +64,42 @@ const spreadSudoku = (sudoku) => {
 		newSudoku.push(newRow);
 	}
 	return newSudoku;
-};
+}
 
-const getRow = (pos, sudoku) => {};
+function getRow({ i }, sudoku) {
+	return sudoku[i];
+}
 
-const getColumn = (pos, sudoku) => {};
+function getColumn({ j }, sudoku) {
+	return sudoku.map((row) => row[j]);
+}
 
-const getBlock = (pos, sudoku) => {};
+function getBlock({ i, j }, sudoku) {
+	const { i: blocki, j: blockj } = getBlockCoordinates(i, j);
+	const block = [];
+	for (let x = blocki; x < blocki + 3; x++) {
+		for (let y = blockj; y < blockj + 3; y++) {
+			block.push(sudoku[i][j]);
+		}
+	}
+	return block;
+}
 
-const alreadyInRow = (n, pos) => {};
+function getBlockCoordinates(i, j) {
+	const modi = parseInt(i / 3) * 3;
+	const modj = parseInt(j / 3) * 3;
 
-const alreadyInColumn = (n, pos) => {};
+	return {
+		i: modi,
+		j: modj
+	};
+}
 
-const alreadyInBlock = (n, pos) => {};
+function alreadyInArray(value, array) {
+	return array.findIndex(pos => pos.value === value) !== -1;
+}
 
-const isSolution = (sudoku) => {
+function isSolution(sudoku) {
 	for (let i = 0; i < sudoku[i].length; i++) {
 		const row = sudoku[i];
 		for (let j = 0; j < row.length; j++) {
@@ -83,4 +108,4 @@ const isSolution = (sudoku) => {
 		}
 	}
 	return true;
-};
+}
