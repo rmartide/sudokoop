@@ -4,12 +4,12 @@ solve(sudoku1);
 console.timeEnd("Sudoku1");
 
 function solve(oldSudoku) {
-	const sudoku = spreadSudoku(oldSudoku);
+	const sudoku = [...oldSudoku];
 	if (isSolution(sudoku)) {
 		printSolution(sudoku);
 	} else {
 		for (let i = 0; i < 9; i++) {
-			const row = sudoku[i];
+			const row = [...sudoku[i]];
 			for (let j = 0; j < 9; j++) {
 				const value = row[j];
 				if (value === 0) {
